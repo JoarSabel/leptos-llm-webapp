@@ -17,14 +17,17 @@ pub fn ChatArea(cx: Scope, conversation: ReadSignal<Conversation>) -> impl IntoV
 
     view! {cx,
         <div 
-            class="h-screen pb-24 w-full flex flex-col overflow-y-auto border border-gray-300 rounded p-5 bg-gray-100" 
+            class="h-full pb-24 w-full flex flex-col overflow-y-auto rounded p-5 bg-gray-100 px-36" 
             node_ref=chat_div_ref
         >
             {move || conversation.get().messages.iter().map(move |message| {
                 let class_str = if message.user { USER_MESSAGE_CLASS } else { MODEL_MESSAGE_CLASS };
+                let outer_class = if message.user { "flex justify-end" } else { "flex justify-start" };
                 view!{cx, 
-                    <div class={class_str}>
-                        {message.text.clone()}
+                    <div class={outer_class}>
+                        <div class={class_str}>
+                            {message.text.clone()}
+                        </div>
                     </div>
                 }
             }).collect::<Vec<_>>()
