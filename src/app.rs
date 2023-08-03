@@ -4,6 +4,7 @@ use leptos_meta::*;
 mod components;
 use components::chat_area::ChatArea;
 use components::type_area::TypeArea;
+use components::side_bar::SideBar;
 
 use crate::api::converse;
 use crate::model::conversation::{Conversation, Message};
@@ -54,8 +55,17 @@ pub fn App(cx: Scope) -> impl IntoView {
 
         // sets the document title
         <Title text="Rust Chat"/>
-        <ChatArea conversation/>
-        <TypeArea send/>
+        <body class="min-h-screen bg-gray-100">
+            <div class="flex flex-row w-full h-screen">
+                <div class="w-1/6">
+                   <SideBar/> 
+                </div>
+                <div class="flex flex-col w-5/6">
+                    <ChatArea conversation/>
+                    <TypeArea send/>
+                </div>
+            </div>
+        </body>
     }
 }
 
