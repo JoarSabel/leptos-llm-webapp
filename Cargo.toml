@@ -21,10 +21,16 @@ serde = { version = "1.0.176", features = ["derive"] }
 llm = { git = "https://github.com/rustformers/llm" , branch = "main", optional = true, default-features = false, features = ["models"]}
 rand = { version = "0.8.5", optional = true}
 dotenv = { version = "0.15.0", optional = true}
+actix-ws = { version = "0.2.5", optional = true }
+actix-rt = { verson = "2.8.0", optional = true }
+futures = { version = "0.3.28", optional = true }
+gloo-net = { version = "0.4.0"}
+tokio = {version = "1.31.0", optional = true, features = ["full"]}
+web-sys = { version = "0.3.64" }
 
 [features]
 csr = ["leptos/csr", "leptos_meta/csr", "leptos_router/csr"]
-hydrate = ["leptos/hydrate", "leptos_meta/hydrate", "leptos_router/hydrate"]
+hydrate = ["leptos/hydrate", "leptos_meta/hydrate", "leptos_router/hydrate", "gloo-net/websocket", "dep:futures"]
 ssr = [
   "dep:actix-files",
   "dep:actix-web",
@@ -32,6 +38,10 @@ ssr = [
   "dep:llm",
   "dep:rand",
   "dep:dotenv",
+  "dep:actix-ws",
+  "dep:actix-rt",
+  "dep:futures",
+  "tokio",
   "leptos/ssr",
   "leptos_meta/ssr",
   "leptos_router/ssr",

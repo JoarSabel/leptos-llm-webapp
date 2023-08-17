@@ -1,20 +1,60 @@
+use std::cell::RefCell;
+use std::rc::Rc;
+
+use futures::stream::SplitSink;
 use leptos::*;
 use leptos_meta::*;
 
 mod components;
 use components::chat_area::ChatArea;
+use components::password_area::PasswordArea;
 use components::type_area::TypeArea;
 use components::side_bar::SideBar;
 
-use crate::api::converse;
+// use crate::api::converse;
 use crate::model::conversation::{Conversation, Message};
 
 #[component]
 pub fn App(cx: Scope) -> impl IntoView {
+
+    // create_effect(cx, move |_| {
+    //     converse(cx, None, None, true) 
+    // });
+
     // Provides context that manages stylesheets, titles, meta tags, etc.
     provide_meta_context(cx);
 
     let (conversation, set_conversation) = create_signal(cx, Conversation::new());
+
+    use gloo_net::websocket::futures::WebSocket;
+    use gloo_net::websocket::Message::Text as Txt;
+    use futures::{SinkExt, StreamExt};
+    let client: Rc<RefCell<Option<SplitSink<WebSocket, gloo_net::websocket::Message>>>> = Default::default();
+    let client_clone = client.clone();
+
+    // PRAISE BE, in leptos 0.5 we wont have to pass cx all the time!
+    create_effect(cx, move |_| {
+        let location = web_sys::window().unwrap().location();
+        let hostname = location.hostname().expect("Err-oar, failed to get origin hostname");
+        let websocket_url = format!("ws://{hostname}:3000/websocket");
+
+        let connection = WebSocket::open(&format!("{websocket_url}")).expect("Failed to do websocketeering");
+        let (sender, mut recv) = connection.split();
+        spawn_local(async move {
+            while let Some(msg) = recv.next().await {
+                match msg {
+                    Ok(Txt(msg)) => {
+                        set_conversation.update(move |c| {
+                            c.messages.last_mut().unwrap().text.push_str(&msg);
+                        });
+                    }
+                    _ => { break; }
+                }
+            }
+        });
+        *client_clone.borrow_mut() = Some(sender);
+    });
+     
     let send = create_action(cx, move |new_message: &String| {
         let user_message = Message {
             text: new_message.clone(),
@@ -24,14 +64,29 @@ pub fn App(cx: Scope) -> impl IntoView {
             c.messages.push(user_message);
 
         });
-        converse(cx, conversation.get())
+        // converse(cx, Some(conversation.get()), None, false)
+        let client2 = client.clone();
+        let msg = new_message.to_string();
+        async move {
+            client2
+                .borrow_mut()
+                .as_mut()
+                .unwrap()
+                .send(Txt(msg.to_string()))
+                .await
+                .map_err(|_| ServerFnError::ServerError("WebSocket problem".to_string()))
+        }
     });
+
+    // let password_send = create_action(cx, move |password: &String| {
+    //     // converse(cx, None, Some(password.clone()), false)
+    // });
     
     create_effect(cx, move |_| {
         // Fires every time the read signal changes
         if let Some(_) = send.input().get() {
             let model_message = Message {
-                text: String::from("..."),
+                text: String::new(),
                 user: false,
             };
 
@@ -40,13 +95,13 @@ pub fn App(cx: Scope) -> impl IntoView {
             });
         }
     });
-    create_effect(cx, move |_| {
-        if let Some(Ok(response)) = send.value().get() {
-            set_conversation.update(move |c| {
-                c.messages.last_mut().unwrap().text = response;
-            })
-        }
-    });
+    // create_effect(cx, move |_| {
+    //     if let Some(Ok(response)) = send.value().get() {
+    //         set_conversation.update(move |c| {
+    //             c.messages.last_mut().unwrap().text = response;
+    //         })
+    //     }
+    // });
 
     view! { cx,
         // injects a stylesheet into the document <head>
@@ -62,7 +117,14 @@ pub fn App(cx: Scope) -> impl IntoView {
                 </div>
                 <div class="flex flex-col w-5/6">
                     <ChatArea conversation/>
-                    <TypeArea send/>
+                    <div class="flex flex-row">
+                        <div class="w-2/3">
+                            <TypeArea send/>
+                        </div>
+                        <div class="w-1/3">
+                            // <PasswordArea password_send/>
+                        </div>
+                    </div>
                 </div>
             </div>
         </body>
