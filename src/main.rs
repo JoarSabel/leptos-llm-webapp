@@ -1,5 +1,10 @@
 use cfg_if::cfg_if;
 
+use api::websocket;
+pub mod api;
+pub mod model;
+
+
 #[cfg(feature = "ssr")]
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
@@ -27,6 +32,7 @@ async fn main() -> std::io::Result<()> {
         App::new()
             .app_data(model.clone())
             .service(css)
+            .route("/websocket",web::get().to(websocket))
             .route("/api/{tail:.*}", leptos_actix::handle_server_fns())
             // serve JS/WASM/CSS from `pkg`
             .service(Files::new("/pkg", format!("{site_root}/pkg")))
@@ -58,10 +64,18 @@ cfg_if! {
             use std::path::PathBuf;
             dotenv().ok();
             let model_path = env::var("MODEL_PATH").expect("MODEL_PATH must be set");
-
+            // let model_parameters = llm::ModelParameters {
+            //     prefer_mmap: true,
+            //     context_size: 2048,
+            //     lora_adapters: None,
+            //     use_gpu: true,
+            //     gpu_layers: None,
+            //     rope_overrides: None,
+            // };
             llm::load::<Llama>(
                 &PathBuf::from(&model_path),
                 llm::TokenizerSource::Embedded,
+                // model_parameters,
                 Default::default(),
                 llm::load_progress_callback_stdout,
             ).unwrap_or_else(|err| {
