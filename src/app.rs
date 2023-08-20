@@ -7,19 +7,13 @@ use leptos_meta::*;
 
 mod components;
 use components::chat_area::ChatArea;
-use components::password_area::PasswordArea;
 use components::type_area::TypeArea;
 use components::side_bar::SideBar;
 
-// use crate::api::converse;
 use crate::model::conversation::{Conversation, Message};
 
 #[component]
 pub fn App(cx: Scope) -> impl IntoView {
-
-    // create_effect(cx, move |_| {
-    //     converse(cx, None, None, true) 
-    // });
 
     // Provides context that manages stylesheets, titles, meta tags, etc.
     provide_meta_context(cx);
@@ -64,7 +58,6 @@ pub fn App(cx: Scope) -> impl IntoView {
             c.messages.push(user_message);
 
         });
-        // converse(cx, Some(conversation.get()), None, false)
         let client2 = client.clone();
         let msg = new_message.to_string();
         async move {
@@ -77,10 +70,6 @@ pub fn App(cx: Scope) -> impl IntoView {
                 .map_err(|_| ServerFnError::ServerError("WebSocket problem".to_string()))
         }
     });
-
-    // let password_send = create_action(cx, move |password: &String| {
-    //     // converse(cx, None, Some(password.clone()), false)
-    // });
     
     create_effect(cx, move |_| {
         // Fires every time the read signal changes
@@ -95,13 +84,6 @@ pub fn App(cx: Scope) -> impl IntoView {
             });
         }
     });
-    // create_effect(cx, move |_| {
-    //     if let Some(Ok(response)) = send.value().get() {
-    //         set_conversation.update(move |c| {
-    //             c.messages.last_mut().unwrap().text = response;
-    //         })
-    //     }
-    // });
 
     view! { cx,
         // injects a stylesheet into the document <head>
@@ -118,12 +100,7 @@ pub fn App(cx: Scope) -> impl IntoView {
                 <div class="flex flex-col w-5/6">
                     <ChatArea conversation/>
                     <div class="flex flex-row">
-                        <div class="w-2/3">
-                            <TypeArea send/>
-                        </div>
-                        <div class="w-1/3">
-                            // <PasswordArea password_send/>
-                        </div>
+                        <TypeArea send/>
                     </div>
                 </div>
             </div>
