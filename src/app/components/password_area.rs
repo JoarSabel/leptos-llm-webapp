@@ -1,7 +1,7 @@
 use leptos::{*, html::Input};
 
 #[component]
-pub fn PasswordArea(cx: Scope, password_send: Action<String, Result<String, ServerFnError>>) -> impl IntoView {
+pub fn PasswordArea(cx: Scope, password_send: Action<String, Result<(), ServerFnError>>) -> impl IntoView {
     let input_ref = create_node_ref::<Input>(cx);
     view!{cx,
         <div class="h-24 w-full bottom-0 flex justify-center items-center p-5 bg-gradient-to-t from-gray-700 bg-opacity-40">
