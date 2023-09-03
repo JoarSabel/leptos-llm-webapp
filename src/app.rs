@@ -30,7 +30,7 @@ pub fn App(cx: Scope) -> impl IntoView {
     create_effect(cx, move |_| {
         let location = web_sys::window().unwrap().location();
         let hostname = location.hostname().expect("Err-oar, failed to get origin hostname");
-        let websocket_url = format!("ws://{hostname}:3000/websocket");
+        let websocket_url = format!("ws://{hostname}:8080/websocket");
 
         let connection = WebSocket::open(&format!("{websocket_url}")).expect("Failed to do websocketeering");
         let (sender, mut recv) = connection.split();

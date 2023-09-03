@@ -1,0 +1,17 @@
+version: '3'
+services:
+  llm_chat:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    deploy:
+      resources:
+        limits:
+          cpus: '4'
+    # volumes:
+    #   - ./llm-model.bin:/app/llm-model.bin
+    # environment:
+    #   # Set the path to the llm as an environment variable
+    #   MODEL_PATH: /app/llm-model.bin
+    ports:
+      - "8080:8080"
