@@ -92,7 +92,7 @@ pub fn App(cx: Scope) -> impl IntoView {
 
         // sets the document title
         <Title text="Rust Chat"/>
-        <body class="min-h-screen bg-gray-100">
+        <div class="min-h-screen bg-gray-100">
             <div class="flex flex-row w-full h-screen">
                 <div class="w-1/6">
                    <SideBar/> 
@@ -104,7 +104,7 @@ pub fn App(cx: Scope) -> impl IntoView {
                     </div>
                 </div>
             </div>
-        </body>
+        </div>
     }
 }
 
