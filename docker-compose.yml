@@ -4,14 +4,10 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    # deploy:
-    #   resources:
-    #     limits:
-    #       cpus: '4'
-    # volumes:
-    #   - ./llm-model.bin:/app/llm-model.bin
-    # environment:
-    #   # Set the path to the llm as an environment variable
-    #   MODEL_PATH: /app/llm-model.bin
+    volumes:
+      - ${PWD}/model/Wizard-Vicuna-7B-Uncensored.ggmlv3.q4_K_S.bin:/app/llm-model.bin
+    environment:
+      # Set the path to the llm as an environment variable
+      MODEL_PATH: /app/llm-model.bin
     ports:
       - "8080:8080"

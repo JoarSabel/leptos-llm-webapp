@@ -1,0 +1,4 @@
+Cargo.lock
+model/
+node_modules/
+**/*.rs.bk

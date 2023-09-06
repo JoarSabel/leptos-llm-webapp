@@ -32,13 +32,10 @@ COPY --from=builder /app/target/server/release/leptos_start /app/
 COPY --from=builder /app/target/site /app/site
 # Copy Cargo.toml if it’s needed at runtime
 COPY --from=builder /app/Cargo.toml /app/
-# Download the LLM model
-RUN wget -O /app/llm-model.bin https://huggingface.co/TheBloke/Wizard-Vicuna-7B-Uncensored-GGML/resolve/main/Wizard-Vicuna-7B-Uncensored.ggmlv3.q4_K_S.bin
 
 WORKDIR /app
 
 # Set any required env variables and
-ENV MODEL_PATH=/app/llm-model.bin
 ENV RUST_LOG="info"
 ENV APP_ENVIRONMENT="production"
 ENV OUTPUT_NAME "leptos_start"
