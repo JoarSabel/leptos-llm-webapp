@@ -91,7 +91,7 @@ pub fn App(cx: Scope) -> impl IntoView {
         <Stylesheet id="leptos" href="/pkg/leptos_start.css"/>
 
         // sets the document title
-        <Title text="Rust Chat"/>
+        <Title text="The Sanctum of Heinz-Werner"/>
         <div class="min-h-screen bg-gray-100">
             <div class="flex flex-row w-full h-screen">
                 <div class="w-1/6">
